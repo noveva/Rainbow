@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<head>
+<meta charset="utf-8">
+<title>Rainbow message</title>
+<link rel=StyleSheet href="logo.css" type="text/css">
+<script src="canvas2image.js" type='text/javascript'></script>
+<script src="base64.js" type='text/javascript'>
+</script>
+<script src="http://edge.quantserve.com/quant.js" async="" type="text/javascript"></script>
+
+<script>
+// setup our canvas
+// and a simple drawing function
+window.onload = function() {
+	//canvas setup
+	var oCanvas = document.getElementById("thecanvas");
+	var oCtx = oCanvas.getContext("2d");
+	var keyHistory="";
+    var line = 1;
+    var lines =[];
+	oCtx.font="40px Montserrat";
+	oCtx.fillStyle= 'white';	
+	oCtx.fillRect(0,0,280,280);
+	
+	//creates gradient colors
+	function get_random_color() {
+		var letters = '0123456789ABCDEF'.split('');
+	    var color = '#';
+	    for (var i = 0; i < 6; i++ ) {
+	        color += letters[Math.round(Math.random() * 15)];}
+	    return color;
+	}
+	//fills the random colors into gradient stops
+	function create_gradient() {
+		var gradient=oCtx.createLinearGradient(35,0,250,0);
+		gradient.addColorStop(0, get_random_color());
+		gradient.addColorStop(0.4, get_random_color());
+		gradient.addColorStop(0.6, get_random_color());
+		gradient.addColorStop(1, get_random_color());
+		return gradient;
+	}
+
+	//filling the gradient
+	var grd = create_gradient();
+	//check if anything was typed before
+	if (localStorage.getItem("gradient")) {
+		keyHistory = localStorage.getItem('gradient');//set keyhistory to the value saved before reload
+		oCtx.fillStyle = grd;
+		oCtx.fillText(keyHistory,0,40);
+		//splits the string from local storage in lines	
+		checkLines ();
+	} else {
+		//start setup and message
+		oCtx.fillStyle= 'black';
+		oCtx.fillText('Start typing...',0,40);
+	}
+	
+	
+//typeIn function bulk of code
+    
+    window.addEventListener("keyup", keyUpHandler, true);
+    //adds letter to the string stored in local storage
+    function addletter(letter){
+        keyHistory+=letter;
+        oCtx.clearRect(0,0,340,340);
+        oCtx.fillStyle= grd;
+        wrapText(false);
+    }
+    //removes letters to the string stored in local storage
+    function removeletter(){
+        keyHistory = keyHistory.substring(0,keyHistory.length-1);
+        oCtx.clearRect(0,0,340,340);
+        oCtx.fillStyle= grd;
+        localStorage.setItem("gradient",keyHistory);
+        wrapText(true);//
+    }
+    //edit the typed letters in lines after the string stored in the local storage is edited
+    function wrapText(direction){
+    	var textWidth = oCtx.measureText(keyHistory);
+    	var lineheight = 40;
+    	//checking if the letters string width exeeds canvas width
+    	if ( textWidth['width']>= (340*line) ) {
+    		
+    		keyHistory = keyHistory.substring(0,keyHistory.length-1)+'\n'+
+    		keyHistory.substring(keyHistory.length-1,keyHistory.length);
+    		line = line +1;
+		}
+		// goes back a line if the letters string width exeeds canvas width
+		else if ( textWidth['width']< ( 280*(line-1) ) && direction){
+			line = line -1;
+		}
+		// takes the string stored in the local storage abd splits it into lines
+		lines = keyHistory.split('\n');
+		for (var i = 0; i<lines.length; i++) {
+		    oCtx.fillText(lines[i], 0, 40 + (i*lineheight) );
+		}       		     	
+    }
+    //triggered after reload, retrieves string stored in local storage and splits it into lines
+    function checkLines(){
+    	var textWidth = oCtx.measureText(keyHistory);
+    	var lineheight = 40;
+    	lines = keyHistory.split('\n');
+		for (var i = 0; i<lines.length; i++) {
+		    oCtx.fillText(lines[i], 0, 40 + ((i*lineheight)-1) );
+		}
+    }
+    //triggered by keydown event, adds or removes letters from the string in the local storage
+    function keyUpHandler(event){
+        var letters="abcdefghijklmnopqrstuvwxyz";
+        var key=event.keyCode;
+
+        if(key>64 && key<91){
+            var letter=letters.substring(key-64,key-65);
+            addletter(letter);
+        }
+        else if (key==32){
+        	event.preventDefault();
+        	addletter(' ');
+        }
+        else if(key==8){
+            removeletter();
+        }
+        
+    }
+
+
+//plugin to convert canvas into png
+//retrieved from http://www.nihilogic.dk/labs/canvas2image/
+//do not touch
+    document.getElementById("gradient").onclick = function() {
+		localStorage.setItem("gradient",keyHistory);
+		javascript:location.reload(true);
+	}
+
+	document.getElementById("reset").onclick = function() {
+		localStorage.removeItem("gradient");
+		javascript:location.reload(true);
+	}
+
+	function showDownloadText() {
+		document.getElementById("buttoncontainer").style.display = "none";
+		document.getElementById("textdownload").style.visibility = "visible";
+	}
+
+	function hideDownloadText() {
+		document.getElementById("buttoncontainer").style.display = "block";
+		document.getElementById("textdownload").style.visibility = "visible";
+	}
+
+	function convertCanvas(strType) {
+		if (strType == "PNG")
+			var oImg = Canvas2Image.saveAsPNG(oCanvas, true)
+		if (strType == "JPEG")
+			var oImg = Canvas2Image.saveAsJPEG(oCanvas, true);
+
+		if (!oImg) {
+			alert("Sorry, this browser is not capable of saving " + strType + " files!");
+			return false;
+		}
+
+		oImg.id = "canvasimage";
+
+		oImg.style.border = oCanvas.style.border;
+		oCanvas.parentNode.replaceChild(oImg, oCanvas);
+
+		showDownloadText();
+	}
+
+	function saveCanvas(pCanvas, strType) {
+		var bRes = false;
+		if (strType == "PNG")
+			bRes = Canvas2Image.saveAsPNG(oCanvas);
+		if (strType == "JPEG")
+			bRes = Canvas2Image.saveAsJPEG(oCanvas);
+
+		if (!bRes) {
+			alert("Sorry, this browser is not capable of saving " + strType + " files!");
+			return false;
+		}
+	}
+
+	
+	document.getElementById("convertpngbtn").onclick = function() {
+		convertCanvas("PNG");
+	}
+
+	}
+</script>
+
+</head>
+<body>
+<section id="content">
+	
+	<!-- #canvas is to store the generated SVG information -->
+	<canvas width="394" height="329" style="border:none; background: white;" id="thecanvas">
+	</canvas>
+
+	<div id="textdownload" style="visibility:hidden"><p>Now you can right click and download the image </p>
+	<input id="goBack" type="button" value="or GO BACK" onClick="javascript:location.reload(true)"> 
+	</div>
+
+</section>
+
+<div id="buttoncontainer">
+	<div class="col1">
+		<input type="button" id="gradient" value="GRADIENT" onClick="get_random_color()"> 
+		<p></p>
+	</div>
+	<div class="col1">
+		<input type="button" id="reset" value="RESET" onClick="reset()"> 
+		<p></p>
+	</div>
+	<div class="col1">
+		<input type="button" id="convertpngbtn" value="Convert to PNG">
+		<p></p
+	</div>
+</div>
+
+</body>
+
+</html>

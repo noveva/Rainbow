@@ -1,0 +1,101 @@
+@import url(http://fonts.googleapis.com/css?family=Montserrat:700,400);
+
+
+body
+{
+background: url('stitched_wool.png') #f5f5f5 repeat;
+width:100%;
+margin:0;
+}
+
+:focus {outline:0px;};
+
+p{
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 400; 
+	font-size: 1em;
+	color: black;	
+	float:left;
+}
+
+#content {
+	margin: 0% 15%;
+	position: relative;
+	padding: 5%;
+	float: left;
+	clear: both;
+	height: 350px;
+	top: 0;
+	left: 0;
+	background: white;
+}
+
+#content img{
+	
+}
+
+#textdownload{
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 400; 
+	font-size: 0.7em;
+	background: none;
+	color: black;
+	border:none;
+	position: relative;
+	float:left;
+	width:100%;
+	padding:0%;
+	margin-top: 5%;
+}
+
+#textdownload p{
+	margin-right: 5%;
+}
+
+#textdownload input {margin-top: 1.5%;}
+input {
+	display:inline;
+	border:none;
+	position: relative;	
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 400; 
+	font-size: 0.7em;
+	color: white;
+	background: none;
+	width: 100%;
+	float: left;
+	vertical-align: middle;
+	margin-top: 6%;
+}
+input:hover  {
+	color: black;
+}
+
+#buttoncontainer{
+	position: relative;
+	float:left;
+	width:68%;
+	margin: 0% 15%;
+	background: inherit;
+}
+
+.col1, #goBack {
+	position: relative;
+	display: inline-block;
+	width: 30%;
+	margin-right: 2%; 
+	background: black;
+	float:left;
+}
+ .col1:hover, #goBack:hover {
+ 	background:white;
+	-moz-box-shadow:    3px 3px 3px 3px #BDBDBD;
+  -webkit-box-shadow: 0px 0px 3px 3px #BDBDBD;
+  box-shadow:         0px 0px 3px 3px #BDBDBD;
+ }
+
+canvas {
+	position: relative;
+	float: left;
+	clear:both;	/*margin-left: 45%;*/
+}
